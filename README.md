@@ -47,7 +47,7 @@ Shrine.plugin :data_uri
 user.avatar.data_uri #=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"
 ```
 
-Note that `UploadedFile#data_uri` is only available in Shrine >= 1.1.
+Note that `UploadedFile#data_uri` is available starting from Shrine 1.1.
 
 ### Indices
 
