@@ -52,8 +52,7 @@ Note that `UploadedFile#data_uri` is only available in Shrine >= 1.1.
 ### Indices
 
 It is recommended that you add a unique index to the "id" column, for faster
-lookups. Depending on your needs, you can also make the primary key column a
-UUID type, if your database supports it.
+lookups.
 
 ## Contributing
 
