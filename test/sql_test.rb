@@ -20,6 +20,9 @@ describe Shrine::Storage::Sql do
 
   before do
     @sql = sql
+    shrine_class = Class.new(Shrine)
+    shrine_class.storages[:sql] = @sql
+    @uploader = shrine_class.new(:sql)
   end
 
   after do
@@ -36,6 +39,17 @@ describe Shrine::Storage::Sql do
       tempfile = @sql.download(id)
 
       assert_equal ".jpg", File.extname(tempfile.path)
+    end
+  end
+
+  describe "#upload" do
+    it "copies an UploadedFile from SQL storage" do
+      uploaded_file = @uploader.upload(fakeio)
+      @sql.upload(uploaded_file, id = "foo")
+      record = @sql.dataset.where(id: id).first!
+
+      refute_empty record[:content]
+      refute_empty record[:metadata]
     end
   end
 end

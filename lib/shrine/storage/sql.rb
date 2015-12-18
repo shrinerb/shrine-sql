@@ -13,7 +13,7 @@ class Shrine
       end
 
       def upload(io, id, metadata = {})
-        generated_id = dataset.insert(content: io.read, metadata: metadata.to_json)
+        generated_id = store(io, id, metadata)
         id.replace(generated_id.to_s)
       end
 
@@ -55,6 +55,27 @@ class Shrine
       end
 
       private
+
+      def store(io, id, metadata)
+        if copyable?(io, id)
+          copy(io, id, metadata)
+        else
+          insert(io, id, metadata)
+        end
+      end
+
+      def insert(io, id, metadata)
+        dataset.insert(content: io.read, metadata: metadata.to_json)
+      end
+
+      def copy(io, id, metadata)
+        record = io.storage.dataset.where(id: io.id).select(:content, :metadata)
+        dataset.insert([:content, :metadata], record)
+      end
+
+      def copyable?(io, id)
+        io.is_a?(UploadedFile) && io.storage.is_a?(Storage::Sql)
+      end
 
       def content(id)
         dataset.where(id: id).get(:content)
