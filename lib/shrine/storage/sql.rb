@@ -1,5 +1,6 @@
 require "sequel"
 require "stringio"
+require "json"
 
 class Shrine
   module Storage
@@ -12,12 +13,14 @@ class Shrine
       end
 
       def upload(io, id, metadata = {})
-        generated_id = dataset.insert(content: io.read)
+        generated_id = dataset.insert(content: io.read, metadata: metadata.to_json)
         id.replace(generated_id.to_s)
       end
 
       def download(id)
-        tempfile = Tempfile.new("shrine", binmode: true)
+        metadata = JSON.parse(metadata(id))
+        extname = File.extname(metadata["filename"].to_s)
+        tempfile = Tempfile.new(["shrine", extname], binmode: true)
         File.write(tempfile.path, content(id))
         tempfile
       end
@@ -54,8 +57,11 @@ class Shrine
       private
 
       def content(id)
-        record = dataset.first!(id: id)
-        record[:content]
+        dataset.where(id: id).get(:content)
+      end
+
+      def metadata(id)
+        dataset.where(id: id).get(:metadata)
       end
     end
   end

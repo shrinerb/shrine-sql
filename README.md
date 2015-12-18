@@ -17,6 +17,7 @@ We first need to create the table for our files, with "id" and "content" columns
 create_table :files do
   primary_key :id
   column :content, :text # :bytea for PostgreSQL, :blob for MySQL
+  column :metadata, :text # :varchar
 end
 ```
 
