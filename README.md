@@ -55,6 +55,12 @@ Note that `UploadedFile#data_uri` is available starting from Shrine 1.1.
 It is recommended that you add a unique index to the "id" column, for faster
 lookups.
 
+## Copying
+
+If you're using the SQL storage for both cache and store, moving from cache to
+store will copy the record using SQL instead "reuploading" it, which means the
+file contents won't be read into memory.
+
 ## Contributing
 
 You can run the tests with Rake:
