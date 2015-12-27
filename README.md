@@ -37,18 +37,21 @@ Sequel.
 
 ### URL
 
-The shrine-sql storage itself doesn't provide any kind of URL, but you can load
-the `data_uri` plugin, which provides `UploadedFile#data_uri` which returns the
-data URI of the file, which you can display in the browser:
+By itself shrine-sql doesn't provide URLs to files, but they can be streamed
+via a URL with the `download_endpoint` plugin:
 
 ```rb
-Shrine.plugin :data_uri
+# Assuming :store uses the SQL storage.
+Shrine.plugin :download_endpoint, storages: [:store]
 ```
 ```rb
-user.avatar.data_uri #=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"
+Rails.application.routes.draw do
+  mount Shrine::DownloadEndpoint => "/attachments"
+end
 ```
-
-Note that `UploadedFile#data_uri` is available starting from Shrine 1.1.
+```rb
+user.avatar_url #=> "/attachments/store/938432984643.jpg"
+```
 
 ### Indices
 

@@ -33,23 +33,23 @@ describe Shrine::Storage::Sql do
     Shrine::Storage::Linter.new(@sql, action: :warn).call
   end
 
-  describe "#download" do
-    it "preserves the extension" do
-      @sql.upload(fakeio, id = "foo", {"filename" => "foo.jpg"})
-      tempfile = @sql.download(id)
-
-      assert_equal ".jpg", File.extname(tempfile.path)
-    end
-  end
-
   describe "#upload" do
     it "copies an UploadedFile from SQL storage" do
-      uploaded_file = @uploader.upload(fakeio)
+      uploaded_file = @uploader.upload(fakeio, location: "foo.jpg")
       @sql.upload(uploaded_file, id = "foo")
       record = @sql.dataset.where(id: id).first!
 
       refute_empty record[:content]
       refute_empty record[:metadata]
+    end
+  end
+
+  describe "#download" do
+    it "preserves the extension" do
+      @sql.upload(fakeio, id = "foo.jpg")
+      tempfile = @sql.download(id)
+
+      assert_equal ".jpg", File.extname(tempfile.path)
     end
   end
 end

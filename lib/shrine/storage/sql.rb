@@ -1,3 +1,4 @@
+require "shrine"
 require "sequel"
 require "stringio"
 require "json"
@@ -14,15 +15,17 @@ class Shrine
 
       def upload(io, id, metadata = {})
         generated_id = store(io, id, metadata)
-        id.replace(generated_id.to_s)
+        id.replace(generated_id.to_s + File.extname(id))
       end
 
       def download(id)
-        metadata = JSON.parse(metadata(id))
-        extname = File.extname(metadata["filename"].to_s)
-        tempfile = Tempfile.new(["shrine", extname], binmode: true)
+        tempfile = Tempfile.new(["shrine", File.extname(id)], binmode: true)
         File.write(tempfile.path, content(id))
         tempfile
+      end
+
+      def stream(id)
+        yield content(id)
       end
 
       def open(id)
@@ -34,24 +37,30 @@ class Shrine
       end
 
       def exists?(id)
-        this = dataset.where(id: id).limit(1)
-        !this.get(Sequel::SQL::AliasedExpression.new(1, :one)).nil?
+        !find(id).get(Sequel::SQL::AliasedExpression.new(1, :one)).nil?
       end
 
       def delete(id)
-        dataset.where(id: id).delete
+        find(id).delete
       end
 
       def multi_delete(ids)
-        dataset.where(id: ids).delete
+        find(ids).delete
       end
 
-      def url(id, options = {})
+      def url(id, **options)
       end
 
       def clear!(confirm = nil)
         raise Shrine::Confirm unless confirm == :confirm
         dataset.delete
+      end
+
+      protected
+
+      def find(id_or_ids)
+        ids = Array(id_or_ids).map { |s| File.basename(s, ".*") }
+        dataset.where(id: ids).limit(ids.count)
       end
 
       private
@@ -69,7 +78,7 @@ class Shrine
       end
 
       def copy(io, id, metadata)
-        record = io.storage.dataset.where(id: io.id).select(:content, :metadata)
+        record = io.storage.find(io.id).select(:content, :metadata)
         dataset.insert([:content, :metadata], record)
       end
 
@@ -78,11 +87,11 @@ class Shrine
       end
 
       def content(id)
-        dataset.where(id: id).get(:content)
+        find(id).get(:content)
       end
 
       def metadata(id)
-        dataset.where(id: id).get(:metadata)
+        find(id).get(:metadata)
       end
     end
   end
