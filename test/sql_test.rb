@@ -30,7 +30,7 @@ describe Shrine::Storage::Sql do
   end
 
   it "passes the linter" do
-    Shrine::Storage::Linter.new(@sql, action: :warn).call
+    Shrine::Storage::Linter.new(@sql).call
   end
 
   describe "#upload" do
