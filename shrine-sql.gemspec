@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "shrine", "~> 1.1"
   gem.add_dependency "sequel"
+  gem.add_dependency "down", ">= 1.0.3"
 
   gem.add_development_dependency "sqlite3"
   gem.add_development_dependency "rake"

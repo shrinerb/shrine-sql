@@ -1,5 +1,7 @@
 require "shrine"
+require "down"
 require "sequel"
+
 require "stringio"
 require "json"
 
@@ -19,9 +21,7 @@ class Shrine
       end
 
       def download(id)
-        tempfile = Tempfile.new(["shrine", File.extname(id)], binmode: true)
-        File.write(tempfile.path, content(id))
-        tempfile
+        Down.copy_to_tempfile(id, open(id))
       end
 
       def stream(id)
