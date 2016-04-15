@@ -25,7 +25,8 @@ class Shrine
       end
 
       def stream(id)
-        yield content(id)
+        content = content(id)
+        yield content, content.size
       end
 
       def open(id)
