@@ -15,8 +15,8 @@ class Shrine
         @dataset = @database[table]
       end
 
-      def upload(io, id, metadata = {})
-        generated_id = store(io, id, metadata)
+      def upload(io, id, **options)
+        generated_id = store(io, id, **options)
         id.replace(generated_id.to_s + File.extname(id))
       end
 
@@ -52,8 +52,7 @@ class Shrine
       def url(id, **options)
       end
 
-      def clear!(confirm = nil)
-        raise Shrine::Confirm unless confirm == :confirm
+      def clear!
         dataset.delete
       end
 
@@ -66,19 +65,19 @@ class Shrine
 
       private
 
-      def store(io, id, metadata)
+      def store(io, id, **options)
         if copyable?(io, id)
-          copy(io, id, metadata)
+          copy(io, id, **options)
         else
-          insert(io, id, metadata)
+          insert(io, id, **options)
         end
       end
 
-      def insert(io, id, metadata)
-        dataset.insert(content: io.read, metadata: metadata.to_json)
+      def insert(io, id, shrine_metadata: {})
+        dataset.insert(content: io.read, metadata: shrine_metadata.to_json)
       end
 
-      def copy(io, id, metadata)
+      def copy(io, id, shrine_metadata: {})
         record = io.storage.find(io.id).select(:content, :metadata)
         dataset.insert([:content, :metadata], record)
       end

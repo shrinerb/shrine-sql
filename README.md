@@ -1,6 +1,6 @@
-# Shrine::Sql
+# Shrine::Storage::Sql
 
-Provides a [Shrine] storage for storing files in any SQL database. It uses
+Provides [Shrine] storage for storing files in any SQL database. It uses
 [Sequel] under the hood.
 
 ## Installation

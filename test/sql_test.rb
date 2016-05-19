@@ -26,7 +26,7 @@ describe Shrine::Storage::Sql do
   end
 
   after do
-    @sql.clear!(:confirm)
+    @sql.clear!
   end
 
   it "passes the linter" do
