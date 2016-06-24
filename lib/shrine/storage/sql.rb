@@ -24,11 +24,6 @@ class Shrine
         Down.copy_to_tempfile(id, open(id))
       end
 
-      def stream(id)
-        content = content(id)
-        yield content, content.size
-      end
-
       def open(id)
         StringIO.new(content(id))
       end
@@ -54,6 +49,14 @@ class Shrine
 
       def clear!
         dataset.delete
+      end
+
+      def method_missing(name, *args)
+        if name == :stream
+          warn "Shrine::Storage::Sql#stream is deprecated over #open."
+          content = content(*args)
+          yield content, content.size
+        end
       end
 
       protected
