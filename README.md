@@ -14,15 +14,31 @@ gem "shrine-sql"
 We first need to create the table for our files, with "id" and "content" columns:
 
 ```rb
-create_table :files do
-  primary_key :id
-  column :content, :blob # :bytea for PostgreSQL
-  column :metadata, :text # :varchar
+# for Sequel users
+Sequel.migration do
+  change do
+    create_table :files do
+      primary_key :id
+      column :content, :blob # :bytea for PostgreSQL
+      column :metadata, :text # :varchar
+    end
+  end
+end
+```
+```rb
+# for ActiveRecord users
+class CreateFiles < ActiveRecord::Migration
+  def change
+    create_table :files do |t|
+      t.binary :content
+      t.text :metadata
+    end
+  end
 end
 ```
 
-We can now instantiate the storage with a `Sequel::Database` and the name of
-the table:
+We should instantiate the storage with a `Sequel::Database` object and the
+name of the table, regardless of the ORM you're actually using in your app.
 
 ```rb
 require "shrine/storage/sql"
