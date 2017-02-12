@@ -16,7 +16,7 @@ We first need to create the table for our files, with "id" and "content" columns
 ```rb
 create_table :files do
   primary_key :id
-  column :content, :text # :bytea for PostgreSQL, :blob for MySQL
+  column :content, :blob # :bytea for PostgreSQL
   column :metadata, :text # :varchar
 end
 ```

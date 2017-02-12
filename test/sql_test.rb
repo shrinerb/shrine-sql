@@ -6,7 +6,7 @@ DB = Sequel.connect(adapter: "sqlite", database: "db.sqlite3")
 
 DB.create_table! :files do
   primary_key :id
-  column :content, :text
+  column :content, :blob
   column :metadata, :text
 end
 

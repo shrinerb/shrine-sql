@@ -77,7 +77,7 @@ class Shrine
       end
 
       def insert(io, id, shrine_metadata: {})
-        dataset.insert(content: io.read, metadata: shrine_metadata.to_json)
+        dataset.insert(content: Sequel::SQL::Blob.new(io.read), metadata: shrine_metadata.to_json)
       end
 
       def copy(io, id, shrine_metadata: {})
@@ -90,7 +90,7 @@ class Shrine
       end
 
       def content(id)
-        find(id).get(:content)
+        find(id).get(:content).to_s
       end
 
       def metadata(id)
