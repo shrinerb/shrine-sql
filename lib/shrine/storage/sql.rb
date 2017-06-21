@@ -23,10 +23,6 @@ class Shrine
         StringIO.new(content(id))
       end
 
-      def read(id)
-        content(id)
-      end
-
       def exists?(id)
         !find(id).get(Sequel::SQL::AliasedExpression.new(1, :one)).nil?
       end
