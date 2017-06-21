@@ -1,5 +1,4 @@
 require "shrine"
-require "down"
 require "sequel"
 
 require "stringio"
@@ -18,10 +17,6 @@ class Shrine
       def upload(io, id, **options)
         generated_id = store(io, id, **options)
         id.replace(generated_id.to_s + File.extname(id))
-      end
-
-      def download(id)
-        Down.copy_to_tempfile(id, open(id))
       end
 
       def open(id)

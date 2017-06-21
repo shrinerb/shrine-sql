@@ -43,13 +43,4 @@ describe Shrine::Storage::Sql do
       refute_empty record[:metadata]
     end
   end
-
-  describe "#download" do
-    it "preserves the extension" do
-      @sql.upload(fakeio, id = "foo.jpg")
-      tempfile = @sql.download(id)
-
-      assert_equal ".jpg", File.extname(tempfile.path)
-    end
-  end
 end
