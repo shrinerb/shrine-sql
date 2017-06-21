@@ -54,7 +54,7 @@ class Shrine
 
       def find(id_or_ids)
         ids = Array(id_or_ids).map { |s| File.basename(s, ".*") }
-        dataset.where(id: ids).limit(ids.count)
+        dataset.where(id: ids)
       end
 
       private
