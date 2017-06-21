@@ -42,14 +42,6 @@ class Shrine
         dataset.delete
       end
 
-      def method_missing(name, *args)
-        if name == :stream
-          warn "Shrine::Storage::Sql#stream is deprecated over #open."
-          content = content(*args)
-          yield content, content.size
-        end
-      end
-
       protected
 
       def find(id_or_ids)
