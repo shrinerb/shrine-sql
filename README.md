@@ -19,8 +19,9 @@ Sequel.migration do
   change do
     create_table :files do
       primary_key :id
-      column :content, :blob # :bytea for PostgreSQL
-      column :metadata, :text # :varchar
+      File :content
+      String :metadata, text: true
+      Time :created_at
     end
   end
 end
@@ -32,6 +33,7 @@ class CreateFiles < ActiveRecord::Migration
     create_table :files do |t|
       t.binary :content
       t.text :metadata
+      t.datetime :created_at
     end
   end
 end
@@ -45,7 +47,7 @@ require "shrine/storage/sql"
 require "sequel"
 
 DB = Sequel.connect("postgres:///my-database")
-Shrine.storages[:store] = Shrine::Storage::Sql.new(database: DB, table: :files)
+Shrine::Storage::Sql.new(database: DB, table: :files)
 ```
 
 You can see [Connecting to a database] on how connect to any database with
@@ -62,7 +64,7 @@ Shrine.plugin :download_endpoint, storages: [:store]
 ```
 ```rb
 Rails.application.routes.draw do
-  mount Shrine::DownloadEndpoint => "/attachments"
+  mount Shrine.download_endpoint => "/attachments"
 end
 ```
 ```rb
@@ -79,6 +81,22 @@ lookups.
 If you're using the SQL storage for both cache and store, moving from cache to
 store will copy the record using SQL instead "reuploading" it, which means the
 file contents won't be read into memory.
+
+## Clearing
+
+You can delete all data from the storage via `Shrine::Storage::Sql#clear!`:
+
+```rb
+sql = Shrine::Storage::Sql.new(database: DB, table: :files)
+sql.clear!
+```
+
+If you're using SQL as temporary storage, you can clear old files by passing
+a block to `#clear!` and querying the `created_at` column:
+
+```rb
+sql.clear! { |dataset| dataset.where{created_at < Time.now - 7*24*60*60} }
+```
 
 ## Contributing
 

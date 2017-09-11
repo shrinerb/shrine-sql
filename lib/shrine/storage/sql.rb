@@ -7,11 +7,11 @@ require "json"
 class Shrine
   module Storage
     class Sql
-      attr_reader :database, :dataset
+      attr_reader :database, :table
 
       def initialize(database:, table:)
         @database = database
-        @dataset = @database[table]
+        @table    = table
       end
 
       def upload(io, id, **options)
@@ -39,7 +39,13 @@ class Shrine
       end
 
       def clear!
+        dataset = self.dataset
+        dataset = yield dataset if block_given?
         dataset.delete
+      end
+
+      def dataset
+        database[table]
       end
 
       protected
@@ -59,13 +65,20 @@ class Shrine
         end
       end
 
-      def insert(io, id, shrine_metadata: {})
-        dataset.insert(content: Sequel::SQL::Blob.new(io.read), metadata: shrine_metadata.to_json)
+      def insert(io, id, shrine_metadata: {}, **options)
+        record = {}
+        record[:content]    = Sequel::SQL::Blob.new(io.read)
+        record[:metadata]   = shrine_metadata.to_json
+        record[:created_at] = Sequel::CURRENT_TIMESTAMP if database.schema(table).assoc(:created_at)
+
+        dataset.insert(record)
       end
 
-      def copy(io, id, shrine_metadata: {})
-        record = io.storage.find(io.id).select(:content, :metadata)
-        dataset.insert([:content, :metadata], record)
+      def copy(io, id, shrine_metadata: {}, **options)
+        record_dataset = io.storage.find(io.id).select(:content, :metadata)
+        record_dataset = record_dataset.select_append(Sequel::CURRENT_TIMESTAMP.as(:created_at)) if database.schema(table).assoc(:created_at)
+
+        dataset.insert(record_dataset.columns, record_dataset)
       end
 
       def copyable?(io, id)
