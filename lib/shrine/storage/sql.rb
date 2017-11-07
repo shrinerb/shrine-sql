@@ -31,10 +31,6 @@ class Shrine
         find(id).delete
       end
 
-      def multi_delete(ids)
-        find(ids).delete
-      end
-
       def url(id, **options)
       end
 
