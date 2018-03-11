@@ -110,6 +110,6 @@ $ bundle exec rake test
 
 [MIT](http://opensource.org/licenses/MIT)
 
-[Shrine]: https://github.com/janko-m/shrine
+[Shrine]: https://github.com/shrinerb/shrine
 [Sequel]: https://github.com/jeremyevans/sequel
 [Connecting to a database]: http://sequel.jeremyevans.net/rdoc/files/doc/opening_databases_rdoc.html
