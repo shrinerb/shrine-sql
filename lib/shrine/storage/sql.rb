@@ -19,7 +19,7 @@ class Shrine
         id.replace(generated_id.to_s + File.extname(id))
       end
 
-      def open(id)
+      def open(id, **)
         StringIO.new(content(id))
       end
 
