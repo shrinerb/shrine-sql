@@ -24,7 +24,7 @@ class Shrine
       end
 
       def exists?(id)
-        !find(id).get(Sequel::SQL::AliasedExpression.new(1, :one)).nil?
+        !find(id).empty?
       end
 
       def delete(id)
