@@ -21,6 +21,8 @@ class Shrine
 
       def open(id, **)
         StringIO.new(content(id))
+      rescue Sequel::NoMatchingRow
+        fail Shrine::FileNotFound, "file #{id.inspect} not found on storage"
       end
 
       def exists?(id)
@@ -82,11 +84,11 @@ class Shrine
       end
 
       def content(id)
-        find(id).get(:content).to_s
+        find(id).first![:content].to_s
       end
 
       def metadata(id)
-        find(id).get(:metadata)
+        find(id).first![:metadata]
       end
     end
   end
