@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = "shrine-sql"
-  gem.version       = "2.1.1"
+  gem.version       = "2.2.0"
 
   gem.required_ruby_version = ">= 2.1"
 
